@@ -18,7 +18,7 @@ switch (command) {
         break;
     
     case "movie-this":
-    
+        getMovie();
         break;
     
     case "do-what-it-says":
@@ -36,19 +36,37 @@ function getConcert() {
 
         if (response.data.length < 9) {
             for (let i = 0; i < response.data.length; i++) {
-                console.log(response.data[i].venue.name);
-                console.log(response.data[i].venue.city + ", " + response.data[i].venue.country);
-                console.log(response.data[i].datetime); //need to reformat with moment.js
+                console.log("Venue: " + response.data[i].venue.name);
+                console.log("Location: " + response.data[i].venue.city + ", " + response.data[i].venue.country);
+                console.log("Date: " + response.data[i].datetime); //need to reformat with moment.js
                 console.log(" ");
             };
         } else {
             for (let i = 0; i < 8; i++) {
-                console.log(response.data[i].venue.name);
-                console.log(response.data[i].venue.city + ", " + response.data[i].venue.country);
-                console.log(response.data[i].datetime); //need to reformat with moment.js
+                console.log("Venue: " + response.data[i].venue.name);
+                console.log("Location: " + response.data[i].venue.city + ", " + response.data[i].venue.country);
+                console.log("Date: " + response.data[i].datetime); //need to reformat with moment.js
                 console.log(" ");
             };
         };
+
+    }).catch(function(error) {
+        console.log(error);
+    });
+};
+
+function getMovie() {
+    let queryURL = "http://www.omdbapi.com/?t=" + userInput + "&apikey=trilogy";
+
+    axios.get(queryURL).then(function(response) {
+        console.log("Title: " + response.data.Title);
+        console.log("Release year: " + response.data.Year);
+        console.log("IMDB rating: " + response.data.imdbRating);
+        console.log("Rotten Tomatoes rating: " + response.data.Ratings[1].Value);
+        console.log("Country: " + response.data.Country);
+        console.log("Language: " + response.data.Language);
+        console.log("Plot: " + response.data.Plot);
+        console.log("Actors: " + response.data.Actors);
 
     }).catch(function(error) {
         console.log(error);
