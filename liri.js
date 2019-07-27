@@ -2,8 +2,9 @@ require("dotenv").config();
 
 let keys = require("./keys.js");
 let axios = require("axios");
+let Spotify = require("node-spotify-api");
 
-// let spotify = new Spotify(keys.spotify); //access your keys information
+let spotify = new Spotify(keys.spotify); //access your keys information
 
 let command = process.argv[2];
 let userInput = process.argv[3]; //for now... need to concatenate
@@ -14,7 +15,7 @@ switch (command) {
         break;
     
     case "spotify-this-song":
-    
+        getSong();
         break;
     
     case "movie-this":
@@ -34,6 +35,7 @@ function getConcert() {
     axios.get(queryURL).then(function(response) {
         console.log(response.data.length);
 
+        //try i < response.data.length && i < 8
         if (response.data.length < 9) {
             for (let i = 0; i < response.data.length; i++) {
                 console.log("Venue: " + response.data[i].venue.name);
@@ -55,8 +57,59 @@ function getConcert() {
     });
 };
 
+function getSong() {
+    let songName = "";
+
+    if (userInput) {
+        songName = userInput;
+    } else {
+        songName = "the sign";
+    };
+
+    spotify.search({
+        type: "track",
+        query: songName,
+        limit: 8
+    }).then(function(response) {
+        // console.log(response.tracks.items.length);
+        // console.log(response.tracks.items[0]);
+
+        for (let i = 0; i < response.tracks.items.length; i++) {
+            if (userInput) {
+                console.log("Artist(s): " + response.tracks.items[i].artists[0].name);
+                console.log("Song name: " + response.tracks.items[i].name);
+                console.log("Preview link(1): " + response.tracks.items[i].preview_url);
+                console.log("Preview link(2): " + response.tracks.items[i].external_urls.spotify);
+                console.log("Album: " + response.tracks.items[i].album.name);
+                console.log(" ");
+            } else {
+                if (response.tracks.items[i].artists[0].name === "Ace of Base") {
+                    console.log("Artist(s): " + response.tracks.items[i].artists[0].name);
+                    console.log("Song name: " + response.tracks.items[i].name);
+                    console.log("Preview link(1): " + response.tracks.items[i].preview_url);
+                    console.log("Preview link(2): " + response.tracks.items[i].external_urls.spotify);
+                    console.log("Album: " + response.tracks.items[i].album.name);
+                    console.log(" ");
+                };
+            };
+        };
+
+    }).catch(function(error) {
+        console.log(error);
+    });
+
+};
+
 function getMovie() {
-    let queryURL = "http://www.omdbapi.com/?t=" + userInput + "&apikey=trilogy";
+    let movieName = "";
+
+    if (userInput) {
+        movieName = userInput;
+    } else {
+        movieName = "mr.nobody";
+    };
+
+    let queryURL = "http://www.omdbapi.com/?t=" + movieName + "&apikey=trilogy";
 
     axios.get(queryURL).then(function(response) {
         console.log("Title: " + response.data.Title);
