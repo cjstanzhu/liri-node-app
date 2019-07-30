@@ -32,11 +32,9 @@ Users can enter a movie name and information regarding the movie will be display
     * Actors in the movie.
 ```
 
-![movie-this example](./)
-
 If the user doesn't input a movie name, the application will output data for the movie "Mr. Nobody."
 
-![movie-this example no name](./)
+![movie-this example](./assets/images/movie-this.jpg)
 
 2. `node liri.js concert-this <artist/band name here>`
 
@@ -61,17 +59,15 @@ Users can enter a song name and up to 8 entries matching the song name will be d
     * Album information.
 ```
 
-![spotify-this-song example](./)
-
 If the user doesn't input a song name, the application will output data for the song "The Sign" by Ace of Base.
 
-![spotify-this-song example no name](./)
+![spotify-this-song example](./assets/images/spotify-this-song.jpg)
 
 4. `node liri.js do-what-it-says`
 
 Users also have a bonus option to let LIRI read the random.txt file associated with the application to dictate its action.
 
-![do-what-it-says example](./)
+![do-what-it-says example](./assets/images/do-what-it-says.jpg)
 
 ## Contributor
 
