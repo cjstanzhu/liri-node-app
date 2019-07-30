@@ -3,58 +3,71 @@ require("dotenv").config();
 let keys = require("./keys.js");
 let axios = require("axios");
 let Spotify = require("node-spotify-api");
+let fs = require("fs");
 
 let spotify = new Spotify(keys.spotify); //access your keys information
 
+let nodeArgs = process.argv;
 let command = process.argv[2];
-let userInput = process.argv[3]; //for now... need to concatenate
+let userInput = "";
 
-switch (command) {
-    case "concert-this":
-        getConcert();
-        break;
-    
-    case "spotify-this-song":
-        getSong();
-        break;
-    
-    case "movie-this":
-        getMovie();
-        break;
-    
-    case "do-what-it-says":
-    
-        break;
-    default:
-        console.log("Please enter a valid command.");
+for (let i = 3; i < nodeArgs.length; i++) {
+    if (i > 3) {
+        userInput = userInput + " " + nodeArgs[i];
+    } else {
+        userInput += nodeArgs[i];
+    };
+};
+
+liriBot(command);
+
+function liriBot(command) {
+    switch (command) {
+        case "concert-this":
+            getConcert();
+            break;
+
+        case "spotify-this-song":
+            getSong();
+            break;
+
+        case "movie-this":
+            getMovie();
+            break;
+
+        case "do-what-it-says":
+            getCommand();
+            break;
+
+        default:
+            console.log("Please enter a valid command.");
+    };
 };
 
 function getConcert() {
-    let queryURL = "https://rest.bandsintown.com/artists/" + userInput + "/events?app_id=codingbootcamp";
+    if (userInput === "") {
+        console.log("Please enter an artist name.");
+    } else {
+        let queryURL = "https://rest.bandsintown.com/artists/" + userInput + "/events?app_id=codingbootcamp";
 
-    axios.get(queryURL).then(function(response) {
-        console.log(response.data.length);
+        axios.get(queryURL).then(function(response) {
+            // console.log(response.data.length);
 
-        //try i < response.data.length && i < 8
-        if (response.data.length < 9) {
-            for (let i = 0; i < response.data.length; i++) {
-                console.log("Venue: " + response.data[i].venue.name);
-                console.log("Location: " + response.data[i].venue.city + ", " + response.data[i].venue.country);
-                console.log("Date: " + response.data[i].datetime); //need to reformat with moment.js
-                console.log(" ");
+            if (response.data.length === 0) {
+                console.log("No upcoming concerts/events scheduled.");
+            } else {
+                for (let i = 0; i < 8 && i < response.data.length; i++) {
+                    console.log(" ");
+                    console.log("Venue: " + response.data[i].venue.name);
+                    console.log("Location: " + response.data[i].venue.city + ", " + response.data[i].venue.country);
+                    console.log("Date: " + response.data[i].datetime); //need to reformat with moment.js
+                };
             };
-        } else {
-            for (let i = 0; i < 8; i++) {
-                console.log("Venue: " + response.data[i].venue.name);
-                console.log("Location: " + response.data[i].venue.city + ", " + response.data[i].venue.country);
-                console.log("Date: " + response.data[i].datetime); //need to reformat with moment.js
-                console.log(" ");
-            };
-        };
 
-    }).catch(function(error) {
-        console.log(error);
-    });
+        }).catch(function(error) {
+            console.log(error);
+        });
+    };
 };
 
 function getSong() {
@@ -71,25 +84,22 @@ function getSong() {
         query: songName,
         limit: 8
     }).then(function(response) {
-        // console.log(response.tracks.items.length);
-        // console.log(response.tracks.items[0]);
-
         for (let i = 0; i < response.tracks.items.length; i++) {
             if (userInput) {
+                console.log(" ");
                 console.log("Artist(s): " + response.tracks.items[i].artists[0].name);
                 console.log("Song name: " + response.tracks.items[i].name);
-                console.log("Preview link(1): " + response.tracks.items[i].preview_url);
-                console.log("Preview link(2): " + response.tracks.items[i].external_urls.spotify);
+                console.log("Preview link(1): " + response.tracks.items[i].external_urls.spotify);
+                console.log("Preview link(2): " + response.tracks.items[i].preview_url);
                 console.log("Album: " + response.tracks.items[i].album.name);
-                console.log(" ");
             } else {
                 if (response.tracks.items[i].artists[0].name === "Ace of Base") {
+                    console.log(" ");
                     console.log("Artist(s): " + response.tracks.items[i].artists[0].name);
                     console.log("Song name: " + response.tracks.items[i].name);
-                    console.log("Preview link(1): " + response.tracks.items[i].preview_url);
-                    console.log("Preview link(2): " + response.tracks.items[i].external_urls.spotify);
+                    console.log("Preview link(1): " + response.tracks.items[i].external_urls.spotify);
+                    console.log("Preview link(2): " + response.tracks.items[i].preview_url);
                     console.log("Album: " + response.tracks.items[i].album.name);
-                    console.log(" ");
                 };
             };
         };
@@ -97,7 +107,6 @@ function getSong() {
     }).catch(function(error) {
         console.log(error);
     });
-
 };
 
 function getMovie() {
@@ -112,6 +121,7 @@ function getMovie() {
     let queryURL = "http://www.omdbapi.com/?t=" + movieName + "&apikey=trilogy";
 
     axios.get(queryURL).then(function(response) {
+        console.log(" ");
         console.log("Title: " + response.data.Title);
         console.log("Release year: " + response.data.Year);
         console.log("IMDB rating: " + response.data.imdbRating);
@@ -126,4 +136,19 @@ function getMovie() {
     });
 };
 
+function getCommand() {
+    fs.readFile("./random.txt", "utf8", function(error, data) {
+        if (error) {
+            return console.log(error);
+        };
+
+        let dataArray = data.split(",");
+        // console.log(dataArray);
+
+        command = dataArray[0];
+        userInput = dataArray[1];
+
+        liriBot(command);
+    });
+};
 
