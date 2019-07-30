@@ -4,6 +4,7 @@ let keys = require("./keys.js");
 let axios = require("axios");
 let Spotify = require("node-spotify-api");
 let fs = require("fs");
+let moment = require("moment");
 
 let spotify = new Spotify(keys.spotify); //access your keys information
 
@@ -57,10 +58,14 @@ function getConcert() {
                 console.log("No upcoming concerts/events scheduled.");
             } else {
                 for (let i = 0; i < 8 && i < response.data.length; i++) {
+                    let dateArray = response.data[i].datetime.split("T");
+                    dateConverted = moment(dateArray[0], "YYYY-MM-DD").format("MM/DD/YYYY");
+                    // console.log(dateConverted);
+
                     console.log(" ");
                     console.log("Venue: " + response.data[i].venue.name);
                     console.log("Location: " + response.data[i].venue.city + ", " + response.data[i].venue.country);
-                    console.log("Date: " + response.data[i].datetime); //need to reformat with moment.js
+                    console.log("Date: " + dateConverted);
                 };
             };
 
