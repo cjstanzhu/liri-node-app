@@ -48,7 +48,7 @@ Users can enter an artist/band name and information regarding their next (up to)
     * Date of the event.
 ```
 
-![concert-this example](./)
+![concert-this example](./assets/images/concert-this.jpg)
 
 3. `node liri.js spotify-this-song <song name here>`
 
